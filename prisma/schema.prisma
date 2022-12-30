@@ -266,6 +266,7 @@ model cars_model {
   brand_id        BigInt?
   cars_brand      cars_brand?       @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_model_brand_id_37ddf91e_fk_cars_brand_id")
   cars_generation cars_generation[]
+  type            String
 
   @@index([brand_id], map: "cars_model_brand_id_37ddf91e")
 }
