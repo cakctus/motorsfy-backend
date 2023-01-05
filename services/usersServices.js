@@ -23,7 +23,9 @@ const registrationServices = async (email, password) => {
     },
   })
   if (candidate) {
-    throw ApiError.BadRequest(`User with ${candidate.email} already registered`)
+    throw ApiError.BadRequest(
+      `A user with email ${candidate.email} already exists`
+    )
   }
   // create user
   const hash = await bcrypt.hash(password, 3)
@@ -102,13 +104,13 @@ const loginServices = async (email, password) => {
   })
 
   if (!user) {
-    throw ApiError.BadRequest("This user doesnt exist")
+    throw ApiError.BadRequest(`User with ${email} email does not exist`)
   }
 
   const isPassEqual = await bcrypt.compare(password, user.password)
 
   if (!isPassEqual) {
-    throw ApiError("Password is not correct")
+    throw ApiError.BadRequest("Password is not correct")
   }
 
   const obj = {
@@ -152,10 +154,12 @@ const refreshTokenServices = async (refreshToken) => {
   const dbToken = await findToken(refreshToken)
   const userToken = await validateRefreshToken(refreshToken)
 
-  if (!dbToken || !userToken) throw ApiError.UnauthorizedError()
+  console.log(dbToken)
+
+  if (!userToken) throw ApiError.UnauthorizedError()
 
   const obj = {
-    userId: userToken.id,
+    userId: userToken.userId,
     email: userToken.email,
     isActivated: userToken.isActivated,
     refreshToken: "",

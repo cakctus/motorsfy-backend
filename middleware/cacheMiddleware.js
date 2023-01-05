@@ -1,6 +1,6 @@
 import NodeCache from "node-cache"
 
-const cache = new NodeCache({ checkperiod: 1 })
+const cache = new NodeCache({ checkperiod: 5 })
 
 function cacheMiddleware(req, res, next) {
   try {
@@ -23,12 +23,6 @@ function cacheMiddleware(req, res, next) {
         res.originalSend(body)
         cache.set(key, body, cacheMiddleware)
       }
-      cache.on("set", function (key, value) {
-        console.log("cache set")
-      })
-      cache.on("expired", function (key, value) {
-        console.log("cache expired")
-      })
       next()
     }
   } catch (error) {

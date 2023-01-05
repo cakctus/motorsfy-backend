@@ -29,9 +29,9 @@ const listModels = async (req, res, next) => {
 
 const listGeneration = async (req, res, next) => {
   try {
-    const { brandId, modelId, year } = req.params
-    console.log(req.params)
-    const data = await listGenerationsServices(Number(brandId), modelId, year)
+    const { brandId, modelId, page } = req.query
+    console.log(req.query)
+    const data = await listGenerationsServices(Number(brandId), modelId, page)
     return res.json(data)
   } catch (error) {
     next(error)

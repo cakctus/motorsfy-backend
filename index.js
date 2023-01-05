@@ -33,6 +33,7 @@ app.use(
     origin: "http://localhost:3000",
   })
 )
+
 // routes
 app.use("/api", carsRoutes)
 app.use("/api", authRoutes)
@@ -41,58 +42,15 @@ app.use("/api", mainRoutes)
 app.use("/api", getCars)
 app.use("/api", mainCategory)
 app.use(errorMiddleware)
+app.use(clientErrorHandler)
 
-// const brand = await prisma.cars_brand.findMany()
-
-// const model = await prisma.cars_model.findMany({
-//   where: {
-//     brand_id: 285n,
-//   },
-// })
-
-// const generation = await prisma.cars_generation.findMany({
-//   where: {
-//     name: {
-//       contains: "Sharan",
-//     },
-//   },
-//   include: {
-//     cars_model: true,
-//     cars_modification: true,
-//   },
-// })
-
-// const modification = await prisma.cars_modification.findMany({
-//   where: {
-//     start_prod: {
-//       gte: "2022",
-//     },
-//   },
-//   include: {
-//     cars_dimensions: true,
-//     cars_drivetrainbrakessuspension: true,
-//     cars_electriccarshybrids: true,
-//     cars_engineoil: true,
-//     cars_generation: true,
-//     cars_icengine: true,
-//     cars_internalcombustionengine: true,
-//     cars_performance: true,
-//     cars_spacevolumeweights: true,
-//     cars_modification_electric_engine: true,
-//   },
-// include: {
-//   cars_generation: {
-//     where: {
-//       name: "Sharan",
-//     },
-//   },
-// },
-// })
-
-// console.log(brand)
-// console.log(model)
-// console.log(generation)
-// console.log(modification)
+function clientErrorHandler(err, req, res, next) {
+  if (req.xhr) {
+    res.status(500).send({ error: "Something failed!" })
+  } else {
+    next(err)
+  }
+}
 
 const start = async () => {
   try {

@@ -6,10 +6,7 @@ const router = Router()
 router.get("/cars-brands-search", main.listBrands)
 router.get("/cars-models-search/:brandId", main.listModels)
 // router.post("/cars-models", main.listModels)
-router.get(
-  "/cars-generations-search/:brandId/:modelId/:year",
-  main.listGeneration
-)
+router.get("/cars-generations-search/", main.listGeneration)
 // router.get(
 //   "/cars-generations-result/:generationId/:year",
 //   main.listGenerationResult

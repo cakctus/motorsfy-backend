@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client"
+import { createPaginator } from "prisma-pagination"
 
 const prisma = new PrismaClient()
+
+const paginate = createPaginator({ perPage: 10 })
 
 const listBrandsServices = async () => {
   const brands = await prisma.cars_brand.findMany({})
@@ -69,7 +72,7 @@ const listModelsServices = async (brandId) => {
   return parse
 }
 
-const getlistGenerationsServices = async (modelId) => {
+const getlistGenerationsMainServices = async (modelId) => {
   const generations = await prisma.cars_generation.findMany({
     where: {
       model_id: Number(modelId),
@@ -89,32 +92,10 @@ const getlistGenerationsServices = async (modelId) => {
   return parse
 }
 
-const listGenerationsServices = async (brandId, modelId, year) => {
-  if (modelId === "all") {
-    const models = await prisma.cars_model.findMany({
-      where: {
-        brand_id: brandId,
-      },
-      include: {
-        cars_generation: {
-          include: {
-            cars_modification: {
-              include: {
-                cars_modification_electric_engine: true,
-              },
-            },
-          },
-        },
-      },
-    })
-    const json = JSON.stringify(models, (key, value) =>
-      typeof value === "bigint" ? value.toString() : value
-    )
-    const parse = JSON.parse(json)
-    return parse
-  }
-  if (modelId !== "all") {
-    const generations = await prisma.cars_generation.findMany({
+const getlistGenerationsServices = async (modelId, page) => {
+  const generations = await paginate(
+    await prisma.cars_generation,
+    {
       where: {
         model_id: Number(modelId),
       },
@@ -125,12 +106,86 @@ const listGenerationsServices = async (brandId, modelId, year) => {
           },
         },
       },
-    })
-    const json = JSON.stringify(generations, (key, value) =>
+    },
+    {
+      page,
+    }
+  )
+  // const generations = await prisma.cars_generation.findMany({
+  //   where: {
+  //     model_id: Number(modelId),
+  //   },
+  //   include: {
+  //     cars_modification: {
+  //       include: {
+  //         cars_modification_electric_engine: true,
+  //       },
+  //     },
+  //   },
+  // })
+  const json = JSON.stringify(generations.data, (key, value) =>
+    typeof value === "bigint" ? value.toString() : value
+  )
+  const parse = JSON.parse(json)
+  return parse
+}
+
+const listGenerationsServices = async (brandId, modelId, page) => {
+  if (modelId === "all") {
+    const models = await paginate(
+      await prisma.cars_model,
+      {
+        where: {
+          brand_id: brandId,
+        },
+        include: {
+          cars_generation: {
+            include: {
+              cars_modification: {
+                include: {
+                  cars_modification_electric_engine: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      { page }
+    )
+    const json = JSON.stringify(models.data, (key, value) =>
       typeof value === "bigint" ? value.toString() : value
     )
     const parse = JSON.parse(json)
-    return parse
+    return {
+      data: parse,
+      meta: models.meta,
+    }
+  }
+  if (modelId !== "all") {
+    const generations = await paginate(
+      prisma.cars_generation,
+      {
+        where: {
+          model_id: Number(modelId),
+        },
+        include: {
+          cars_modification: {
+            include: {
+              cars_modification_electric_engine: true,
+            },
+          },
+        },
+      },
+      { page }
+    )
+    const json = JSON.stringify(generations.data, (key, value) =>
+      typeof value === "bigint" ? value.toString() : value
+    )
+    const parse = JSON.parse(json)
+    return {
+      data: parse,
+      meta: generations.meta,
+    }
   }
 }
 
@@ -301,4 +356,5 @@ export {
   createCarCommentServices,
   getCarCommentServices,
   getlistGenerationsServices,
+  getlistGenerationsMainServices,
 }

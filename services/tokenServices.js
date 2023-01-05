@@ -8,7 +8,7 @@ const generateTokens = async (payload) => {
     expiresIn: "1h",
   })
   const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: "15d",
+    expiresIn: "10m",
   })
 
   return {
@@ -63,6 +63,8 @@ const removeTokenServices = async (refreshToken) => {
     },
   })
 
+  console.log(t)
+
   const token = await prisma.token.delete({
     where: {
       id: t.id,
@@ -72,9 +74,9 @@ const removeTokenServices = async (refreshToken) => {
 }
 
 const findToken = async (refreshToken) => {
-  const token = await prisma.token.findFirst({
+  const token = await prisma.Token.findFirst({
     where: {
-      refreshToken,
+      refreshToken: refreshToken,
     },
   })
   return token

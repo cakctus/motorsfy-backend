@@ -13,7 +13,11 @@ router.get(
   mainCategory.getCarsByBodyController
 )
 router.get("/top-ev-by-range", mainCategory.topEvByRangeController)
-router.get("/top-cars-by-speed", mainCategory.topCarsBySpeedController)
+router.get(
+  "/top-cars-by-speed",
+  cacheMiddleware,
+  mainCategory.topCarsBySpeedController
+)
 router.get(
   "/cars-brands-search-by-body",
   cacheMiddleware,
@@ -21,6 +25,7 @@ router.get(
 )
 router.get(
   "/cars-body-search-result",
+  pagination,
   mainCategory.carsBodySearchResultController
 )
 

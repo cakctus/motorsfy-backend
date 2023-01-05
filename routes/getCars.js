@@ -6,6 +6,7 @@ const router = Router()
 
 router.get("/cars-brands", get.GetListBrands)
 router.get("/cars-models/:brandName", get.getListModels)
+router.get("/main-cars-generations/:modelId", get.getListGenerationMain)
 router.get("/cars-generations/:modelId", get.getListGeneration)
 router.get("/cars-modifications/:generationId", get.getListModification)
 router.get(

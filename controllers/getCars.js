@@ -23,11 +23,29 @@ const getListModels = async (req, res, next) => {
   }
 }
 
-const getListGeneration = async (req, res, next) => {
+const getListGenerationMain = async (req, res, next) => {
   try {
     const { modelId } = req.params
     console.log(req.params, "getCars controler")
-    const data = await carServices.getlistGenerationsServices(Number(modelId))
+    const data = await carServices.getlistGenerationsMainServices(
+      Number(modelId)
+    )
+    return res.json(data)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const getListGeneration = async (req, res, next) => {
+  try {
+    const { modelId } = req.params
+    const page = req.query.page
+    console.log(req.params, "getCars controler")
+    console.log(page)
+    const data = await carServices.getlistGenerationsServices(
+      Number(modelId),
+      page
+    )
     return res.json(data)
   } catch (error) {
     next(error)
@@ -112,4 +130,5 @@ export {
   getRatingForModification,
   createCarComment,
   getCarComment,
+  getListGenerationMain,
 }

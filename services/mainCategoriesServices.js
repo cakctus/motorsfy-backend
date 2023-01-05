@@ -5,22 +5,29 @@ import { createPaginator } from "prisma-pagination"
 const prisma = new PrismaClient()
 const paginate = createPaginator({ perPage: 10 })
 
-const newCarsListServices = async (start, limit, page) => {
-  if (page < 1) {
-    return "No posts!"
-  }
-  const year = new Date().getFullYear()
+const newCarsListServices = async () => {
+  const prevYear = new Date().getFullYear() - 1
+  const currentYear = new Date().getFullYear()
   const data = await prisma.cars_model.findMany({
-    // take: 100,
-    skip: start,
+    where: {
+      cars_generation: {
+        every: {
+          cars_modification: {
+            every: {
+              start_prod: {
+                gte: prevYear.toString() || currentYear.toString(),
+              },
+            },
+          },
+        },
+      },
+    },
     include: {
       cars_generation: {
         include: {
           cars_modification: {
             where: {
-              start_prod: {
-                gte: year.toString(),
-              },
+              start_prod: prevYear.toString() || currentYear.toString(),
             },
           },
         },
@@ -35,7 +42,10 @@ const newCarsListServices = async (start, limit, page) => {
     return item.cars_generation
   })
   const res = newc.flat().filter((item) => item.cars_modification.length !== 0)
-  return res
+  console.log(res)
+  return {
+    data: res,
+  }
 }
 
 const getCarsByBodyServices = async () => {
@@ -182,6 +192,7 @@ const topCarsBySpeedServices = async () => {
       cars_performance: {
         select: {
           acceleration_0_100_km_h: true,
+          acceleration_0_60_mph: true,
         },
       },
       cars_generation: {
@@ -195,6 +206,7 @@ const topCarsBySpeedServices = async () => {
   const performance = modifications.filter(
     (item) =>
       item.cars_performance !== null &&
+      item.cars_performance.acceleration_0_100_km_h !== null &&
       item.cars_performance.acceleration_0_100_km_h !== null
   )
   const json = JSON.stringify(performance, (key, value) => {
@@ -202,6 +214,10 @@ const topCarsBySpeedServices = async () => {
       return value.toString()
     }
     if (key === "acceleration_0_100_km_h") {
+      return parseFloat(value)
+    }
+
+    if (key === "acceleration_0_60_mph") {
       return parseFloat(value)
     }
     return value
@@ -233,22 +249,22 @@ const topCarsBySpeedServices = async () => {
       item.cars_performance !== null &&
       item.cars_performance.acceleration_0_100_km_h !== null
   )
-  return performanceResult.slice(0, 99)
+  return performanceResult.slice(0, 100)
 }
 
 const carsBrandsSearchByBodyServices = async () => {
   const brands = await prisma.cars_brand.findMany({
-    include: {
-      cars_model: {
-        include: {
-          cars_generation: {
-            include: {
-              cars_modification: true,
-            },
-          },
-        },
-      },
-    },
+    // include: {
+    //   cars_model: {
+    //     include: {
+    //       cars_generation: {
+    //         include: {
+    //           cars_modification: true,
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
   })
   const json = JSON.stringify(brands, (key, value) =>
     typeof value === "bigint" ? value.toString() : value
@@ -257,15 +273,9 @@ const carsBrandsSearchByBodyServices = async () => {
   return parse
 }
 
-const carsBodySearchResultServices = async (
-  brand,
-  bodyType,
-  start,
-  limit,
-  page
-) => {
+const carsBodySearchResultServices = async (brand, bodyType, page) => {
   if (brand === "null") {
-    const r = await paginate(await prisma.cars_model, {
+    const data = await prisma.cars_model.findMany({
       where: {
         cars_generation: {
           every: {
@@ -292,50 +302,43 @@ const carsBodySearchResultServices = async (
           },
         },
       },
-      take: 10,
-      skip: 0,
     })
-    // const data = await prisma.cars_model.findMany({
-    //   where: {
-    //     cars_generation: {
-    //       every: {
-    //         cars_modification: {
-    //           every: {
-    //             body_type: {
-    //               contains: bodyType,
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    //   include: {
-    //     cars_generation: {
-    //       include: {
-    //         cars_modification: {
-    //           where: {
-    //             body_type: {
-    //               contains: bodyType,
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // })
-    console.log(r, "R")
-    // const json = JSON.stringify(r, (key, value) =>
-    //   typeof value === "bigint" ? value.toString() : value
-    // )
-    // const parse = JSON.parse(json.data)
-    // const maps = parse.map((item) => item.cars_generation)
-    // const maps2 = maps
-    //   .flat()
-    //   .filter((item) => item.cars_modification.length > 0)
-    //
-    // const map3 = maps2.flat()
-    // const maps4 = map3.filter((item) => item.body_type === bodyType)
-    return r
+    const json = JSON.stringify(data, (key, value) =>
+      typeof value === "bigint" ? value.toString() : value
+    )
+    const parse = JSON.parse(json)
+    const maps = parse.map((item) => item.cars_generation)
+    const maps2 = maps
+      .flat()
+      .filter((item) => item.cars_modification.length > 0)
+    return {
+      data: maps2,
+    }
+  }
+  if (bodyType === "null") {
+    const data = await prisma.cars_model.findMany({
+      where: {
+        brand_id: Number(brand),
+      },
+      include: {
+        cars_generation: {
+          include: {
+            cars_modification: true,
+          },
+        },
+      },
+    })
+    const json = JSON.stringify(data, (key, value) =>
+      typeof value === "bigint" ? value.toString() : value
+    )
+    const parse = JSON.parse(json)
+    const maps = parse.map((item) => item.cars_generation)
+    const maps2 = maps
+      .flat()
+      .filter((item) => item.cars_modification.length > 0)
+    return {
+      data: maps2,
+    }
   }
   const data = await prisma.cars_model.findMany({
     where: {
@@ -345,7 +348,7 @@ const carsBodySearchResultServices = async (
           cars_modification: {
             some: {
               body_type: {
-                contains: bodyType,
+                equals: bodyType,
               },
             },
           },
@@ -358,7 +361,7 @@ const carsBodySearchResultServices = async (
           cars_modification: {
             where: {
               body_type: {
-                contains: bodyType,
+                equals: bodyType,
               },
             },
           },
@@ -374,7 +377,9 @@ const carsBodySearchResultServices = async (
   const maps2 = maps.flat().filter((item) => item.cars_modification.length > 0)
   // const map3 = maps2.flat()
   // const maps4 = map3.filter((item) => item.body_type === bodyType)
-  return maps2
+  return {
+    data: maps2,
+  }
 }
 
 export {

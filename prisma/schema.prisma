@@ -24,16 +24,16 @@ model User {
   accessToken       String?
   refreshToken      String?
   resetPasswordLink String?
-  token             Token[]
   comment           Comment[]
+  token             Token[]
   cars_rating       cars_rating[]
 }
 
 model Token {
   id           Int    @id @default(autoincrement())
-  user         User   @relation(fields: [userId], references: [id])
   refreshToken String
   userId       Int
+  user         User   @relation(fields: [userId], references: [id])
 }
 
 model auth_group {
@@ -266,7 +266,6 @@ model cars_model {
   brand_id        BigInt?
   cars_brand      cars_brand?       @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_model_brand_id_37ddf91e_fk_cars_brand_id")
   cars_generation cars_generation[]
-  type            String
 
   @@index([brand_id], map: "cars_model_brand_id_37ddf91e")
 }
@@ -299,9 +298,9 @@ model cars_modification {
   cars_internalcombustionengine     cars_internalcombustionengine?      @relation(fields: [internal_combustion_engine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_internal_combustion__eb1797cf_fk_cars_inte")
   cars_performance                  cars_performance?                   @relation(fields: [performance_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_performance_id_24479d2e_fk_cars_perf")
   cars_spacevolumeweights           cars_spacevolumeweights?            @relation(fields: [space_volume_weights_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_space_volume_weights_cb92cf4b_fk_cars_spac")
+  comment                           Comment[]
   cars_modification_electric_engine cars_modification_electric_engine[]
   rating                            cars_rating[]
-  comment                           Comment[]
 
   @@index([dimensions_id], map: "cars_modification_dimensions_id_5afe7c8e")
   @@index([drivetrain_brakes_suspension_id], map: "cars_modification_drivetrain_brakes_suspension_id_0b379a05")
@@ -317,21 +316,21 @@ model cars_modification {
 model Comment {
   id                  Int               @id @default(autoincrement())
   comment             String
-  user                User              @relation(fields: [userId], references: [id])
   userId              Int
-  carsModification    cars_modification @relation(fields: [cars_modificationId], references: [id])
   cars_modificationId BigInt
   created             DateTime          @default(now())
   updated             DateTime          @updatedAt
+  carsModification    cars_modification @relation(fields: [cars_modificationId], references: [id])
+  user                User              @relation(fields: [userId], references: [id])
 }
 
 model cars_rating {
   id                  Int               @id @default(autoincrement())
   rating              Int
-  cars_modification   cars_modification @relation(fields: [cars_modificationId], references: [id])
   cars_modificationId BigInt
-  user                User              @relation(fields: [userId], references: [id])
   userId              Int
+  cars_modification   cars_modification @relation(fields: [cars_modificationId], references: [id])
+  user                User              @relation(fields: [userId], references: [id])
 }
 
 model cars_modification_electric_engine {
