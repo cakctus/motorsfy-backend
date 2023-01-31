@@ -1,6 +1,6 @@
 import NodeCache from "node-cache"
 
-const cache = new NodeCache({ checkperiod: 5 })
+const cache = new NodeCache({ checkperiod: 100 })
 
 function cacheMiddleware(req, res, next) {
   try {

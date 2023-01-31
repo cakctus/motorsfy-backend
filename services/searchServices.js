@@ -83,6 +83,12 @@ const getlistGenerationsMainServices = async (modelId) => {
           cars_modification_electric_engine: true,
         },
       },
+      cars_model: {
+        select: {
+          name: true,
+          cars_brand: true,
+        },
+      },
     },
   })
   const json = JSON.stringify(generations, (key, value) =>
@@ -103,6 +109,7 @@ const getlistGenerationsServices = async (modelId, page) => {
         cars_modification: {
           include: {
             cars_modification_electric_engine: true,
+            cars_modification_electric_engines: true,
           },
         },
       },
@@ -219,6 +226,9 @@ const listModificationsServices = async (generationId) => {
     where: {
       generation_id: generationId,
     },
+    include: {
+      cars_generation: true,
+    },
   })
   const json = JSON.stringify(modifications, (key, value) =>
     typeof value === "bigint" ? value.toString() : value
@@ -241,6 +251,7 @@ const ModificationsDetailServices = async (modificationId) => {
       // body_type: true,
       // seats: true,
       // doors: true,
+      cars_modification_electric_engines: true,
       rating: true,
       comment: {
         orderBy: {
@@ -261,7 +272,20 @@ const ModificationsDetailServices = async (modificationId) => {
       cars_drivetrainbrakessuspension: true,
       cars_electriccarshybrids: true,
       cars_engineoil: true,
-      cars_generation: true,
+      cars_generation: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          model_id: true,
+          cars_model: {
+            include: {
+              cars_brand: true,
+            },
+          },
+          cars_modification: true,
+        },
+      },
       cars_icengine: true,
       cars_internalcombustionengine: true,
       cars_performance: true,

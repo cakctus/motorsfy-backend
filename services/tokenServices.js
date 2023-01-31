@@ -5,10 +5,10 @@ const prisma = new PrismaClient()
 
 const generateTokens = async (payload) => {
   const accesToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "10d",
   })
   const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: "10m",
+    expiresIn: "20d",
   })
 
   return {

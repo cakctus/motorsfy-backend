@@ -51,6 +51,12 @@ const registrationServices = async (email, password) => {
     isActivated: user.isActivated,
     accessToken: "",
     refreshToken: "",
+    dateJoined: user.dateJoined,
+    userPhoto: user.userPhoto,
+    username: user.username,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    isStaff: user.isStaff,
 
     set setAccesToken(value) {
       this.accessToken = value
@@ -119,6 +125,12 @@ const loginServices = async (email, password) => {
     isActivated: user.isActivated,
     accessToken: "",
     refreshToken: "",
+    dateJoined: user.dateJoined,
+    userPhoto: user.userPhoto,
+    username: user.username,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    isStaff: user.isStaff,
 
     set setAccesToken(value) {
       this.accessToken = value
@@ -154,15 +166,33 @@ const refreshTokenServices = async (refreshToken) => {
   const dbToken = await findToken(refreshToken)
   const userToken = await validateRefreshToken(refreshToken)
 
-  console.log(dbToken)
+  // console.log(userToken)
+  // console.log(dbToken)
 
   if (!userToken) throw ApiError.UnauthorizedError()
 
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userToken.userId,
+    },
+  })
+
   const obj = {
-    userId: userToken.userId,
-    email: userToken.email,
-    isActivated: userToken.isActivated,
+    // userId: userToken.userId,
+    // email: userToken.email,
+    // isActivated: userToken.isActivated,
+    // refreshToken: "",
+    userId: user.id,
+    email: user.email,
+    isActivated: user.isActivated,
+    accessToken: "",
     refreshToken: "",
+    dateJoined: user.dateJoined,
+    userPhoto: user.userPhoto,
+    username: user.username,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    isStaff: user.isStaff,
 
     set setRefreshToken(value) {
       this.refreshToken = value

@@ -67,6 +67,7 @@ const getListModification = async (req, res, next) => {
 const getModificationDetail = async (req, res, next) => {
   try {
     const { modificationId } = req.params
+    console.log("details")
     const data = await carServices.ModificationsDetailServices(
       Number(modificationId)
     )

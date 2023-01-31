@@ -14,9 +14,10 @@ model User {
   isSuperuser       Boolean       @default(false)
   username          String?       @unique
   firstName         String?
-  lastLame          String?
+  lastName          String?
   email             String        @unique
-  isStaff           Boolean?
+  userPhoto         String        @default("")
+  isStaff           Boolean?      @default(false)
   isActive          Boolean?
   dateJoined        DateTime
   activationLink    String
@@ -32,8 +33,8 @@ model User {
 model Token {
   id           Int    @id @default(autoincrement())
   refreshToken String
-  userId       Int
   user         User   @relation(fields: [userId], references: [id])
+  userId       Int
 }
 
 model auth_group {
@@ -114,14 +115,14 @@ model auth_user_user_permissions {
 }
 
 model cars_brand {
-  id         BigInt       @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   name       String       @db.VarChar(64)
   image      String?      @db.VarChar(100)
   cars_model cars_model[]
 }
 
 model cars_dimensions {
-  id                                      BigInt              @id @default(autoincrement())
+  id                                      Int                 @id @default(autoincrement())
   length                                  String?             @db.VarChar(300)
   width                                   String?             @db.VarChar(300)
   height                                  String?             @db.VarChar(300)
@@ -143,7 +144,7 @@ model cars_dimensions {
 }
 
 model cars_drivetrainbrakessuspension {
-  id                                     BigInt              @id @default(autoincrement())
+  id                                     Int                 @id @default(autoincrement())
   drivetrain_architecture                String?
   drive_wheel                            String?
   number_of_gears_automatic_transmission String?
@@ -161,7 +162,7 @@ model cars_drivetrainbrakessuspension {
 }
 
 model cars_electriccarshybrids {
-  id                                              BigInt              @id @default(autoincrement())
+  id                                              Int                 @id @default(autoincrement())
   gross_battery_capacity                          String?             @db.VarChar(300)
   all_electric_range_wltp                         String?             @db.VarChar(300)
   all_electric_range                              String?             @db.VarChar(300)
@@ -182,7 +183,7 @@ model cars_electriccarshybrids {
 }
 
 model cars_electricengine {
-  id                                BigInt                              @id @default(autoincrement())
+  id                                Int                                 @id @default(autoincrement())
   power                             String?                             @db.VarChar(64)
   torque                            String?                             @db.VarChar(64)
   location                          String?                             @db.VarChar(128)
@@ -192,25 +193,25 @@ model cars_electricengine {
 }
 
 model cars_engineoil {
-  id                BigInt              @id @default(autoincrement())
+  id                Int                 @id @default(autoincrement())
   coolant           String?             @db.VarChar(32)
   engine_systems    String?             @db.VarChar(32)
   cars_modification cars_modification[]
 }
 
 model cars_generation {
-  id                BigInt              @id @default(autoincrement())
+  id                Int                 @id @default(autoincrement())
   name              String              @db.VarChar(200)
   image             String?             @db.VarChar(100)
-  model_id          BigInt?
-  cars_model        cars_model?         @relation(fields: [model_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_generation_model_id_bab53011_fk_cars_model_id")
+  model_id          Int?
+  cars_model        cars_model?         @relation(fields: [model_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_generation_model_id_bab53011_fk_cars_model_id")
   cars_modification cars_modification[]
 
   @@index([model_id], map: "cars_generation_model_id_bab53011")
 }
 
 model cars_icengine {
-  id                            BigInt              @id @default(autoincrement())
+  id                            Int                 @id @default(autoincrement())
   power                         String?             @db.VarChar(32)
   power_per_litre               String?             @db.VarChar(32)
   torque                        String?             @db.VarChar(32)
@@ -235,7 +236,7 @@ model cars_icengine {
 }
 
 model cars_internalcombustionengine {
-  id                            BigInt              @id @default(autoincrement())
+  id                            Int                 @id @default(autoincrement())
   power                         String?             @db.VarChar(300)
   power_per_litre               String?             @db.VarChar(300)
   torque                        String?             @db.VarChar(300)
@@ -260,47 +261,48 @@ model cars_internalcombustionengine {
 }
 
 model cars_model {
-  id              BigInt            @id @default(autoincrement())
+  id              Int               @id @default(autoincrement())
   name            String            @db.VarChar(64)
   image           String?           @db.VarChar(100)
-  brand_id        BigInt?
-  cars_brand      cars_brand?       @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_model_brand_id_37ddf91e_fk_cars_brand_id")
+  brand_id        Int?
+  cars_brand      cars_brand?       @relation(fields: [brand_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_model_brand_id_37ddf91e_fk_cars_brand_id")
   cars_generation cars_generation[]
 
   @@index([brand_id], map: "cars_model_brand_id_37ddf91e")
 }
 
 model cars_modification {
-  id                                BigInt                              @id @default(autoincrement())
-  name                              String?                             @db.VarChar(300)
-  image                             String?                             @db.VarChar(100)
-  start_prod                        String?                             @db.VarChar(300)
-  end_prod                          String?                             @db.VarChar(300)
-  powertrain_architecture           String?                             @db.VarChar(300)
-  body_type                         String?                             @db.VarChar(300)
-  seats                             String?                             @db.VarChar(300)
-  doors                             String?                             @db.VarChar(300)
-  dimensions_id                     BigInt?
-  drivetrain_brakes_suspension_id   BigInt?
-  electric_cars_hybrids_id          BigInt?
-  engine_oil_id                     BigInt?
-  generation_id                     BigInt
-  ic_engine_id                      BigInt?
-  internal_combustion_engine_id     BigInt?
-  performance_id                    BigInt?
-  space_volume_weights_id           BigInt?
-  cars_dimensions                   cars_dimensions?                    @relation(fields: [dimensions_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_dimensions_id_5afe7c8e_fk_cars_dimensions_id")
-  cars_drivetrainbrakessuspension   cars_drivetrainbrakessuspension?    @relation(fields: [drivetrain_brakes_suspension_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_drivetrain_brakes_su_0b379a05_fk_cars_driv")
-  cars_electriccarshybrids          cars_electriccarshybrids?           @relation(fields: [electric_cars_hybrids_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_electric_cars_hybrid_3da51173_fk_cars_elec")
-  cars_engineoil                    cars_engineoil?                     @relation(fields: [engine_oil_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_engine_oil_id_6cac5881_fk_cars_engineoil_id")
-  cars_generation                   cars_generation                     @relation(fields: [generation_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_generation_id_091547f4_fk_cars_generation_id")
-  cars_icengine                     cars_icengine?                      @relation(fields: [ic_engine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_ic_engine_id_92d81833_fk_cars_icengine_id")
-  cars_internalcombustionengine     cars_internalcombustionengine?      @relation(fields: [internal_combustion_engine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_internal_combustion__eb1797cf_fk_cars_inte")
-  cars_performance                  cars_performance?                   @relation(fields: [performance_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_performance_id_24479d2e_fk_cars_perf")
-  cars_spacevolumeweights           cars_spacevolumeweights?            @relation(fields: [space_volume_weights_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_space_volume_weights_cb92cf4b_fk_cars_spac")
-  comment                           Comment[]
-  cars_modification_electric_engine cars_modification_electric_engine[]
-  rating                            cars_rating[]
+  id                                 Int                                  @id @default(autoincrement())
+  name                               String?                              @db.VarChar(300)
+  image                              String?                              @db.VarChar(100)
+  start_prod                         String?                              @db.VarChar(300)
+  end_prod                           String?                              @db.VarChar(300)
+  powertrain_architecture            String?                              @db.VarChar(300)
+  body_type                          String?                              @db.VarChar(300)
+  seats                              String?                              @db.VarChar(300)
+  doors                              String?                              @db.VarChar(300)
+  dimensions_id                      Int?
+  drivetrain_brakes_suspension_id    Int?
+  electric_cars_hybrids_id           Int?
+  engine_oil_id                      Int?
+  generation_id                      Int
+  ic_engine_id                       Int?
+  internal_combustion_engine_id      Int?
+  performance_id                     Int?
+  space_volume_weights_id            Int?
+  cars_dimensions                    cars_dimensions?                     @relation(fields: [dimensions_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_modification_dimensions_id_5afe7c8e_fk_cars_dimensions_id")
+  cars_drivetrainbrakessuspension    cars_drivetrainbrakessuspension?     @relation(fields: [drivetrain_brakes_suspension_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_modification_drivetrain_brakes_su_0b379a05_fk_cars_driv")
+  cars_electriccarshybrids           cars_electriccarshybrids?            @relation(fields: [electric_cars_hybrids_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_modification_electric_cars_hybrid_3da51173_fk_cars_elec")
+  cars_engineoil                     cars_engineoil?                      @relation(fields: [engine_oil_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_modification_engine_oil_id_6cac5881_fk_cars_engineoil_id")
+  cars_generation                    cars_generation                      @relation(fields: [generation_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_modification_generation_id_091547f4_fk_cars_generation_id")
+  cars_icengine                      cars_icengine?                       @relation(fields: [ic_engine_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_modification_ic_engine_id_92d81833_fk_cars_icengine_id")
+  cars_internalcombustionengine      cars_internalcombustionengine?       @relation(fields: [internal_combustion_engine_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_modification_internal_combustion__eb1797cf_fk_cars_inte")
+  cars_performance                   cars_performance?                    @relation(fields: [performance_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_modification_performance_id_24479d2e_fk_cars_perf")
+  cars_spacevolumeweights            cars_spacevolumeweights?             @relation(fields: [space_volume_weights_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_modification_space_volume_weights_cb92cf4b_fk_cars_spac")
+  cars_modification_electric_engine  cars_modification_electric_engine[]
+  cars_modification_electric_engines cars_modification_electric_engines[]
+  comment                            Comment[]
+  rating                             cars_rating[]
 
   @@index([dimensions_id], map: "cars_modification_dimensions_id_5afe7c8e")
   @@index([drivetrain_brakes_suspension_id], map: "cars_modification_drivetrain_brakes_suspension_id_0b379a05")
@@ -316,37 +318,48 @@ model cars_modification {
 model Comment {
   id                  Int               @id @default(autoincrement())
   comment             String
+  user                User              @relation(fields: [userId], references: [id])
   userId              Int
-  cars_modificationId BigInt
+  carsModification    cars_modification @relation(fields: [cars_modificationId], references: [id])
+  cars_modificationId Int
   created             DateTime          @default(now())
   updated             DateTime          @updatedAt
-  carsModification    cars_modification @relation(fields: [cars_modificationId], references: [id])
-  user                User              @relation(fields: [userId], references: [id])
 }
 
 model cars_rating {
   id                  Int               @id @default(autoincrement())
   rating              Int
-  cars_modificationId BigInt
-  userId              Int
   cars_modification   cars_modification @relation(fields: [cars_modificationId], references: [id])
+  cars_modificationId Int
   user                User              @relation(fields: [userId], references: [id])
+  userId              Int
 }
 
 model cars_modification_electric_engine {
-  id                  BigInt              @id @default(autoincrement())
-  modification_id     BigInt
-  electricengine_id   BigInt
-  cars_electricengine cars_electricengine @relation(fields: [electricengine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_el_electricengine_id_216b8965_fk_cars_elec")
-  cars_modification   cars_modification   @relation(fields: [modification_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cars_modification_el_modification_id_a25e576b_fk_cars_modi")
+  id                  Int                 @id @default(autoincrement())
+  modification_id     Int
+  electricengine_id   Int
+  cars_electricengine cars_electricengine @relation(fields: [electricengine_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_modification_el_electricengine_id_216b8965_fk_cars_elec")
+  cars_modification   cars_modification   @relation(fields: [modification_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cars_modification_el_modification_id_a25e576b_fk_cars_modi")
 
   @@unique([modification_id, electricengine_id], map: "cars_modification_electr_modification_id_electric_94be9c58_uniq")
   @@index([electricengine_id], map: "cars_modification_electric_engine_electricengine_id_216b8965")
   @@index([modification_id], map: "cars_modification_electric_engine_modification_id_a25e576b")
 }
 
+model cars_modification_electric_engines {
+  id                  Int                @id @default(autoincrement())
+  power               String?            @db.VarChar(64)
+  torque              String?            @db.VarChar(64)
+  location            String?            @db.VarChar(128)
+  system_power        String?            @db.VarChar(128)
+  system_torque       String?            @db.VarChar(128)
+  cars_modification   cars_modification? @relation(fields: [cars_modificationId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  cars_modificationId Int?
+}
+
 model cars_performance {
-  id                                                        BigInt              @id @default(autoincrement())
+  id                                                        Int                 @id @default(autoincrement())
   fuel_consumption_economy_urban                            String?
   fuel_consumption_economy_extra_urban                      String?
   fuel_consumption_economy_combined                         String?
@@ -387,7 +400,7 @@ model cars_performance {
 }
 
 model cars_spacevolumeweights {
-  id                                    BigInt              @id @default(autoincrement())
+  id                                    Int                 @id @default(autoincrement())
   kerb_weight                           String?             @db.VarChar(300)
   fuel_tank_capacity                    String?             @db.VarChar(300)
   trunk_boot_space_minimum              String?             @db.VarChar(300)

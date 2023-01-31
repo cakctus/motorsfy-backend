@@ -3,7 +3,12 @@ dotenv.config()
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import bodyParser from "body-parser"
 import compression from "compression"
+// graphql
+import { graphqlHTTP } from "express-graphql"
+import carSchema from "./graphql/carSchema.js"
+import root from "./graphql/root.js"
 // routes
 import carsRoutes from "./routes/carsRoutes.js"
 import authRoutes from "./routes/authRoutes.js"
@@ -11,10 +16,11 @@ import resetPasswordRoutes from "./routes/resetPasswordRoutes.js"
 import mainRoutes from "./routes/mainRoutes.js"
 import getCars from "./routes/getCars.js"
 import mainCategory from "./routes/mainCategoryRoutes.js"
-
+import userRoutes from "./routes/userRoutes.js"
 // middleware
 import errorMiddleware from "./middleware/errorMiddleware.js"
 
+// prisma
 import { PrismaClient } from "@prisma/client"
 
 const PORT = process.env.PORT || 5000
@@ -24,9 +30,11 @@ const app = express()
 // middleware
 app.use(compression())
 app.use(express.static("media"))
-app.use(express.json({ limit: "300mb" }))
+app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
+// app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 app.use(
   cors({
     credentials: true,
@@ -41,16 +49,16 @@ app.use("/api", resetPasswordRoutes)
 app.use("/api", mainRoutes)
 app.use("/api", getCars)
 app.use("/api", mainCategory)
+app.use("/api", userRoutes)
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    graphiql: true,
+    schema: carSchema,
+    rootValue: root,
+  })
+)
 app.use(errorMiddleware)
-app.use(clientErrorHandler)
-
-function clientErrorHandler(err, req, res, next) {
-  if (req.xhr) {
-    res.status(500).send({ error: "Something failed!" })
-  } else {
-    next(err)
-  }
-}
 
 const start = async () => {
   try {

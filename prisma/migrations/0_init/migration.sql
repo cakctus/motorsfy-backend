@@ -1,35 +1,4 @@
 -- CreateTable
-CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
-    "password" TEXT NOT NULL,
-    "lastLogin" TIMESTAMP(3),
-    "isSuperuser" BOOLEAN NOT NULL DEFAULT false,
-    "username" TEXT,
-    "firstName" TEXT,
-    "lastLame" TEXT,
-    "email" TEXT NOT NULL,
-    "isStaff" BOOLEAN,
-    "isActive" BOOLEAN,
-    "dateJoined" TIMESTAMP(3) NOT NULL,
-    "activationLink" TEXT NOT NULL,
-    "isActivated" BOOLEAN NOT NULL DEFAULT false,
-    "accessToken" TEXT,
-    "refreshToken" TEXT,
-    "resetPasswordLink" TEXT,
-
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Token" (
-    "id" SERIAL NOT NULL,
-    "refreshToken" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL,
-
-    CONSTRAINT "Token_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "auth_group" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(150) NOT NULL,
@@ -93,7 +62,7 @@ CREATE TABLE "auth_user_user_permissions" (
 
 -- CreateTable
 CREATE TABLE "cars_brand" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" VARCHAR(64) NOT NULL,
     "image" VARCHAR(100),
 
@@ -102,7 +71,7 @@ CREATE TABLE "cars_brand" (
 
 -- CreateTable
 CREATE TABLE "cars_dimensions" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "length" VARCHAR(300),
     "width" VARCHAR(300),
     "height" VARCHAR(300),
@@ -126,7 +95,7 @@ CREATE TABLE "cars_dimensions" (
 
 -- CreateTable
 CREATE TABLE "cars_drivetrainbrakessuspension" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "drivetrain_architecture" TEXT,
     "drive_wheel" TEXT,
     "number_of_gears_automatic_transmission" TEXT,
@@ -146,7 +115,7 @@ CREATE TABLE "cars_drivetrainbrakessuspension" (
 
 -- CreateTable
 CREATE TABLE "cars_electriccarshybrids" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "gross_battery_capacity" VARCHAR(300),
     "all_electric_range_wltp" VARCHAR(300),
     "all_electric_range" VARCHAR(300),
@@ -169,7 +138,7 @@ CREATE TABLE "cars_electriccarshybrids" (
 
 -- CreateTable
 CREATE TABLE "cars_electricengine" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "power" VARCHAR(64),
     "torque" VARCHAR(64),
     "location" VARCHAR(128),
@@ -181,7 +150,7 @@ CREATE TABLE "cars_electricengine" (
 
 -- CreateTable
 CREATE TABLE "cars_engineoil" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "coolant" VARCHAR(32),
     "engine_systems" VARCHAR(32),
 
@@ -190,17 +159,17 @@ CREATE TABLE "cars_engineoil" (
 
 -- CreateTable
 CREATE TABLE "cars_generation" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" VARCHAR(200) NOT NULL,
     "image" VARCHAR(100),
-    "model_id" BIGINT,
+    "model_id" INTEGER,
 
     CONSTRAINT "cars_generation_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "cars_icengine" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "power" VARCHAR(32),
     "power_per_litre" VARCHAR(32),
     "torque" VARCHAR(32),
@@ -227,7 +196,7 @@ CREATE TABLE "cars_icengine" (
 
 -- CreateTable
 CREATE TABLE "cars_internalcombustionengine" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "power" VARCHAR(300),
     "power_per_litre" VARCHAR(300),
     "torque" VARCHAR(300),
@@ -254,17 +223,17 @@ CREATE TABLE "cars_internalcombustionengine" (
 
 -- CreateTable
 CREATE TABLE "cars_model" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" VARCHAR(64) NOT NULL,
     "image" VARCHAR(100),
-    "brand_id" BIGINT,
+    "brand_id" INTEGER,
 
     CONSTRAINT "cars_model_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "cars_modification" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" VARCHAR(300),
     "image" VARCHAR(100),
     "start_prod" VARCHAR(300),
@@ -273,53 +242,31 @@ CREATE TABLE "cars_modification" (
     "body_type" VARCHAR(300),
     "seats" VARCHAR(300),
     "doors" VARCHAR(300),
-    "dimensions_id" BIGINT,
-    "drivetrain_brakes_suspension_id" BIGINT,
-    "electric_cars_hybrids_id" BIGINT,
-    "engine_oil_id" BIGINT,
-    "generation_id" BIGINT NOT NULL,
-    "ic_engine_id" BIGINT,
-    "internal_combustion_engine_id" BIGINT,
-    "performance_id" BIGINT,
-    "space_volume_weights_id" BIGINT,
+    "dimensions_id" INTEGER,
+    "drivetrain_brakes_suspension_id" INTEGER,
+    "electric_cars_hybrids_id" INTEGER,
+    "engine_oil_id" INTEGER,
+    "generation_id" INTEGER NOT NULL,
+    "ic_engine_id" INTEGER,
+    "internal_combustion_engine_id" INTEGER,
+    "performance_id" INTEGER,
+    "space_volume_weights_id" INTEGER,
 
     CONSTRAINT "cars_modification_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Comment" (
-    "id" SERIAL NOT NULL,
-    "comment" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "cars_modificationId" BIGINT NOT NULL,
-    "created" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "cars_rating" (
-    "id" SERIAL NOT NULL,
-    "rating" INTEGER NOT NULL,
-    "cars_modificationId" BIGINT NOT NULL,
-    "userId" INTEGER NOT NULL,
-
-    CONSTRAINT "cars_rating_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "cars_modification_electric_engine" (
-    "id" BIGSERIAL NOT NULL,
-    "modification_id" BIGINT NOT NULL,
-    "electricengine_id" BIGINT NOT NULL,
+    "id" SERIAL NOT NULL,
+    "modification_id" INTEGER NOT NULL,
+    "electricengine_id" INTEGER NOT NULL,
 
     CONSTRAINT "cars_modification_electric_engine_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "cars_performance" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "fuel_consumption_economy_urban" TEXT,
     "fuel_consumption_economy_extra_urban" TEXT,
     "fuel_consumption_economy_combined" TEXT,
@@ -362,7 +309,7 @@ CREATE TABLE "cars_performance" (
 
 -- CreateTable
 CREATE TABLE "cars_spacevolumeweights" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "kerb_weight" VARCHAR(300),
     "fuel_tank_capacity" VARCHAR(300),
     "trunk_boot_space_minimum" VARCHAR(300),
@@ -558,12 +505,6 @@ CREATE TABLE "moto_physicalmeasurescapacities" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-
--- CreateIndex
 CREATE UNIQUE INDEX "auth_group_name_key" ON "auth_group"("name");
 
 -- CreateIndex
@@ -684,9 +625,6 @@ CREATE INDEX "moto_modification_other_specs_id_217c262e" ON "moto_modification"(
 CREATE INDEX "moto_modification_physical_measures_capacities_id_30c4418d" ON "moto_modification"("physical_measures_capacities_id");
 
 -- AddForeignKey
-ALTER TABLE "Token" ADD CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "auth_group_permissions" ADD CONSTRAINT "auth_group_permissio_permission_id_84c5c92e_fk_auth_perm" FOREIGN KEY ("permission_id") REFERENCES "auth_permission"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
@@ -739,18 +677,6 @@ ALTER TABLE "cars_modification" ADD CONSTRAINT "cars_modification_performance_id
 
 -- AddForeignKey
 ALTER TABLE "cars_modification" ADD CONSTRAINT "cars_modification_space_volume_weights_cb92cf4b_fk_cars_spac" FOREIGN KEY ("space_volume_weights_id") REFERENCES "cars_spacevolumeweights"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "Comment" ADD CONSTRAINT "Comment_cars_modificationId_fkey" FOREIGN KEY ("cars_modificationId") REFERENCES "cars_modification"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Comment" ADD CONSTRAINT "Comment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "cars_rating" ADD CONSTRAINT "cars_rating_cars_modificationId_fkey" FOREIGN KEY ("cars_modificationId") REFERENCES "cars_modification"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "cars_rating" ADD CONSTRAINT "cars_rating_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "cars_modification_electric_engine" ADD CONSTRAINT "cars_modification_el_electricengine_id_216b8965_fk_cars_elec" FOREIGN KEY ("electricengine_id") REFERENCES "cars_electricengine"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

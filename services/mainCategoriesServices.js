@@ -34,11 +34,11 @@ const newCarsListServices = async () => {
       },
     },
   })
-  const json = JSON.stringify(data, (key, value) =>
-    typeof value === "bigint" ? value.toString() : value
-  )
-  const parse = JSON.parse(json)
-  const newc = parse.map((item) => {
+  // const json = JSON.stringify(data, (key, value) =>
+  //   typeof value === "bigint" ? value.toString() : value
+  // )
+  // const parse = JSON.parse(json)
+  const newc = data.map((item) => {
     return item.cars_generation
   })
   const res = newc.flat().filter((item) => item.cars_modification.length !== 0)
@@ -58,11 +58,11 @@ const getCarsByBodyServices = async () => {
       },
     },
   })
-  const json = JSON.stringify(data, (key, value) =>
-    typeof value === "bigint" ? value.toString() : value
-  )
-  const parse = JSON.parse(json)
-  const bodyType = parse.map((item) => {
+  // const json = JSON.stringify(data, (key, value) =>
+  //   typeof value === "bigint" ? value.toString() : value
+  // )
+  // const parse = JSON.parse(json)
+  const bodyType = data.map((item) => {
     return item.cars_generation
   })
   const bodyTypeResponse = bodyType.flat().map((item) => item.cars_modification)

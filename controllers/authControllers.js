@@ -42,7 +42,6 @@ const login = async (req, res, next) => {
 const logout = async (req, res, next) => {
   try {
     const { refreshToken } = req.cookies
-    console.log(refreshToken, "logout")
     const data = await logoutServices(refreshToken)
     res.clearCookie("refreshToken")
     return res.status(200).json(data)
@@ -65,12 +64,11 @@ const refresh = async (req, res, next) => {
   try {
     const { refreshToken } = req.cookies
     const data = await refreshTokenServices(refreshToken)
-    // console.log(data)
     res.cookie("refreshToken", data.obj.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     })
-    res.json(data)
+    return res.json(data)
   } catch (error) {
     next(error)
   }
